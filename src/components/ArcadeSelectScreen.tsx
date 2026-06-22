@@ -173,6 +173,9 @@ export default function ArcadeSelectScreen() {
                 <motion.div
                   key={project.id}
                   variants={itemVariants}
+                  initial="hidden"
+                  animate="show"
+                  exit="exit"
                   layout
                   className="group relative"
                   onMouseEnter={() => setFocusedIndex(index)}

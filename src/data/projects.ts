@@ -15,7 +15,7 @@ export const PROJECTS: ConfiguredProject[] = [
     ticket: 'AJS-TERM',
     status: 'DEPLOYED',
     date: '2026',
-    category: 'Full Stack',
+    category: 'Frontend',
     overview: 'A gamified, retro-themed interactive portfolio featuring a fully functional simulated UNIX terminal and smooth-scrolling GUI.',
     stack: ['Next.js 16', 'React 19', 'TypeScript', 'Tailwind v4', 'GSAP', 'Framer Motion'],
     achievements: [
