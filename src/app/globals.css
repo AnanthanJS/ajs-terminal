@@ -1,0 +1,543 @@
+@import "tailwindcss";
+
+/* ═══════════════════════════════════════════════
+   DESIGN SYSTEM TOKENS
+═══════════════════════════════════════════════ */
+:root {
+  --bg-base: #080808;
+  --bg-surface: #0e0e0e;
+  --bg-elevated: #141414;
+  --text-primary: #e8e8e8;
+  --text-secondary: #909090;
+  --text-muted: #484848;
+  --accent: #bf5fff;
+  --accent-dim: rgba(191, 95, 255, 0.12);
+  --accent-glow: rgba(191, 95, 255, 0.35);
+  --accent-bright: #d080ff;
+  --border: rgba(191, 95, 255, 0.22);
+  --border-subtle: rgba(255, 255, 255, 0.05);
+
+  /* Pixel grid spacing for dot-matrix aesthetics */
+  --pixel: 4px;
+  --dot-size: 1.5px;
+  --dot-gap: 6px;
+}
+
+@theme inline {
+  --color-bg-base: var(--bg-base);
+  --color-bg-surface: var(--bg-surface);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-accent: var(--accent);
+  --color-accent-dim: var(--accent-dim);
+  --color-border: var(--border);
+  --color-border-subtle: var(--border-subtle);
+  --font-pixel: var(--font-pixel), "Courier New", monospace;
+  --font-mono: var(--font-jetbrains-mono), "Courier New", monospace;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+}
+
+/* ═══════════════════════════════════════════════
+   KEYFRAME ANIMATIONS
+═══════════════════════════════════════════════ */
+@keyframes cursor-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+@keyframes led-blink {
+  0%, 80%, 100% { opacity: 1; }
+  85%, 95% { opacity: 0.2; }
+}
+
+@keyframes pixel-scan {
+  0% { transform: translateY(-4px); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(calc(100% + 4px)); opacity: 0; }
+}
+
+@keyframes glitch-1 {
+  0%, 100% { clip-path: inset(0 0 95% 0); transform: translate(-3px, 0); }
+  20% { clip-path: inset(20% 0 60% 0); transform: translate(3px, 0); }
+  40% { clip-path: inset(50% 0 30% 0); transform: translate(-2px, 0); }
+  60% { clip-path: inset(80% 0 5% 0); transform: translate(2px, 0); }
+  80% { clip-path: inset(10% 0 80% 0); transform: translate(-3px, 0); }
+}
+
+@keyframes glitch-2 {
+  0%, 100% { clip-path: inset(80% 0 5% 0); transform: translate(3px, 0); }
+  20% { clip-path: inset(10% 0 70% 0); transform: translate(-3px, 0); }
+  40% { clip-path: inset(40% 0 40% 0); transform: translate(2px, 0); }
+  60% { clip-path: inset(60% 0 20% 0); transform: translate(-2px, 0); }
+  80% { clip-path: inset(0% 0 90% 0); transform: translate(3px, 0); }
+}
+
+@keyframes pixel-flicker {
+  0%, 19%, 21%, 63%, 65%, 100% { opacity: 1; }
+  20%, 62%, 64% { opacity: 0.3; }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 6px var(--accent-glow); }
+  50% { box-shadow: 0 0 18px var(--accent-glow), 0 0 36px var(--accent-dim); }
+}
+
+@keyframes march-dots {
+  0% { background-position: 0 0; }
+  100% { background-position: calc(var(--dot-gap) * 2) 0; }
+}
+
+@keyframes dot-matrix-reveal {
+  0% {
+    opacity: 0;
+    filter: contrast(0) brightness(4) blur(4px);
+    letter-spacing: 0.6em;
+  }
+  40% {
+    opacity: 0.6;
+    filter: contrast(2) brightness(2) blur(1px);
+    letter-spacing: 0.15em;
+  }
+  100% {
+    opacity: 1;
+    filter: contrast(1) brightness(1) blur(0px);
+    letter-spacing: normal;
+  }
+}
+
+@keyframes segment-fill {
+  from { width: 0%; }
+}
+
+/* ═══════════════════════════════════════════════
+   BASE STYLES
+═══════════════════════════════════════════════ */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  /* Pixel font looks better without anti-aliasing */
+  image-rendering: pixelated;
+}
+
+body {
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-x: hidden;
+  /* Global CRT scanline overlay — very subtle */
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(0, 0, 0, 0.06) 3px,
+    rgba(0, 0, 0, 0.06) 4px
+  );
+}
+
+/* Pixel font uses no anti-aliasing for true bitmap look */
+.font-pixel,
+[class*="pixel-heading"] {
+  font-family: var(--font-pixel);
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: unset;
+  image-rendering: pixelated;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--bg-base);
+}
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg-base); }
+::-webkit-scrollbar-thumb { background: var(--accent); }
+
+/* ═══════════════════════════════════════════════
+   PIXEL TYPOGRAPHY
+═══════════════════════════════════════════════ */
+/* Primary pixel headings — Press Start 2P */
+.pixel-heading-xl {
+  font-family: var(--font-pixel);
+  font-size: clamp(10px, 2vw, 14px);
+  line-height: 2.2;
+  letter-spacing: 0.05em;
+  -webkit-font-smoothing: none;
+  image-rendering: pixelated;
+}
+
+.pixel-heading-lg {
+  font-family: var(--font-pixel);
+  font-size: clamp(9px, 1.5vw, 11px);
+  line-height: 2.2;
+  letter-spacing: 0.04em;
+  -webkit-font-smoothing: none;
+}
+
+.pixel-heading-md {
+  font-family: var(--font-pixel);
+  font-size: clamp(7px, 1vw, 9px);
+  line-height: 2.2;
+  letter-spacing: 0.04em;
+  -webkit-font-smoothing: none;
+}
+
+.pixel-heading-sm {
+  font-family: var(--font-pixel);
+  font-size: clamp(6px, 0.8vw, 7px);
+  line-height: 2;
+  letter-spacing: 0.04em;
+  -webkit-font-smoothing: none;
+}
+
+.pixel-label {
+  font-family: var(--font-pixel);
+  font-size: 6px;
+  line-height: 2;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  -webkit-font-smoothing: none;
+}
+
+/* Dot-matrix text glow effect — simulates LED panel emission */
+.pixel-glow {
+  color: var(--accent);
+  text-shadow:
+    0 0 4px var(--accent-glow),
+    0 0 12px rgba(191, 95, 255, 0.25),
+    0 0 28px rgba(191, 95, 255, 0.1);
+}
+
+/* White pixel glow for headings */
+.pixel-glow-white {
+  color: var(--text-primary);
+  text-shadow:
+    0 0 3px rgba(232, 232, 232, 0.5),
+    0 0 10px rgba(232, 232, 232, 0.15);
+}
+
+/* Dot-matrix reveal animation on scroll */
+.pixel-reveal {
+  animation: dot-matrix-reveal 0.8s steps(16) forwards;
+}
+
+/* Flicker — simulates old CRT/LED panel instability */
+.pixel-flicker {
+  animation: pixel-flicker 8s linear infinite;
+}
+
+/* ═══════════════════════════════════════════════
+   PIXEL BORDER SYSTEM
+   Achieves true 8-bit stepped/clipped corners
+═══════════════════════════════════════════════ */
+
+/* 4px pixel-clipped corners */
+.pixel-corners-sm {
+  clip-path: polygon(
+    0 4px, 4px 4px, 4px 0,
+    calc(100% - 4px) 0, calc(100% - 4px) 4px, 100% 4px,
+    100% calc(100% - 4px), calc(100% - 4px) calc(100% - 4px), calc(100% - 4px) 100%,
+    4px 100%, 4px calc(100% - 4px), 0 calc(100% - 4px)
+  );
+}
+
+/* 6px pixel-clipped corners */
+.pixel-corners {
+  clip-path: polygon(
+    0 6px, 6px 6px, 6px 0,
+    calc(100% - 6px) 0, calc(100% - 6px) 6px, 100% 6px,
+    100% calc(100% - 6px), calc(100% - 6px) calc(100% - 6px), calc(100% - 6px) 100%,
+    6px 100%, 6px calc(100% - 6px), 0 calc(100% - 6px)
+  );
+}
+
+/* 8px pixel-clipped corners */
+.pixel-corners-lg {
+  clip-path: polygon(
+    0 8px, 8px 8px, 8px 0,
+    calc(100% - 8px) 0, calc(100% - 8px) 8px, 100% 8px,
+    100% calc(100% - 8px), calc(100% - 8px) calc(100% - 8px), calc(100% - 8px) 100%,
+    8px 100%, 8px calc(100% - 8px), 0 calc(100% - 8px)
+  );
+}
+
+/* Pixel border — creates the visible stepped border lines */
+.pixel-border {
+  position: relative;
+  border: 2px solid var(--border);
+  clip-path: polygon(
+    0 6px, 6px 6px, 6px 0,
+    calc(100% - 6px) 0, calc(100% - 6px) 6px, 100% 6px,
+    100% calc(100% - 6px), calc(100% - 6px) calc(100% - 6px), calc(100% - 6px) 100%,
+    6px 100%, 6px calc(100% - 6px), 0 calc(100% - 6px)
+  );
+}
+
+.pixel-border-accent {
+  border: 2px solid var(--accent);
+  clip-path: polygon(
+    0 6px, 6px 6px, 6px 0,
+    calc(100% - 6px) 0, calc(100% - 6px) 6px, 100% 6px,
+    100% calc(100% - 6px), calc(100% - 6px) calc(100% - 6px), calc(100% - 6px) 100%,
+    6px 100%, 6px calc(100% - 6px), 0 calc(100% - 6px)
+  );
+}
+
+/* Hover glow on pixel-border elements */
+.pixel-border-hover {
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+@media (hover: hover) {
+  .pixel-border-hover:hover {
+    border-color: var(--accent);
+    box-shadow:
+      inset 0 0 20px rgba(191, 95, 255, 0.06),
+      0 0 0 1px rgba(191, 95, 255, 0.15);
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   DOT-MATRIX SURFACE TEXTURES
+═══════════════════════════════════════════════ */
+
+/* Cards look like dot-matrix display panels */
+.dot-matrix-surface {
+  background-image:
+    radial-gradient(circle, rgba(191, 95, 255, 0.07) var(--dot-size), transparent var(--dot-size));
+  background-size: var(--dot-gap) var(--dot-gap);
+  background-repeat: repeat;
+}
+
+/* Darker, more subtle for large sections */
+.dot-matrix-surface-subtle {
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-size: 8px 8px;
+  background-repeat: repeat;
+}
+
+/* LED panel — accent dots, brighter */
+.dot-matrix-surface-led {
+  background-image:
+    radial-gradient(circle, rgba(191, 95, 255, 0.12) var(--dot-size), transparent var(--dot-size));
+  background-size: var(--dot-gap) var(--dot-gap);
+  background-repeat: repeat;
+}
+
+/* ═══════════════════════════════════════════════
+   LED SEGMENT DISPLAY
+   Pixelated progress bars / indicators
+═══════════════════════════════════════════════ */
+.led-bar-track {
+  height: 8px;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.03) 0px,
+      rgba(255, 255, 255, 0.03) 6px,
+      transparent 6px,
+      transparent 8px
+    );
+  clip-path: polygon(
+    0 2px, 2px 2px, 2px 0,
+    calc(100% - 2px) 0, calc(100% - 2px) 2px, 100% 2px,
+    100% calc(100% - 2px), calc(100% - 2px) calc(100% - 2px), calc(100% - 2px) 100%,
+    2px 100%, 2px calc(100% - 2px), 0 calc(100% - 2px)
+  );
+  position: relative;
+  overflow: hidden;
+}
+
+.led-bar-fill {
+  height: 100%;
+  position: relative;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      var(--accent) 0px,
+      var(--accent) 6px,
+      rgba(191, 95, 255, 0.15) 6px,
+      rgba(191, 95, 255, 0.15) 8px
+    );
+  box-shadow: 0 0 8px var(--accent-glow);
+  transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: segment-fill 0.1s ease;
+}
+
+/* ═══════════════════════════════════════════════
+   INTERACTIVE ELEMENTS
+═══════════════════════════════════════════════ */
+.cursor-blink {
+  display: inline-block;
+  width: 8px;
+  height: 14px;
+  background: var(--accent);
+  margin-left: 2px;
+  vertical-align: middle;
+  animation: cursor-blink 1s step-end infinite;
+  box-shadow: 0 0 8px var(--accent-glow);
+}
+
+/* Pixel retro button */
+.pixel-btn {
+  font-family: var(--font-pixel);
+  font-size: 7px;
+  letter-spacing: 0.05em;
+  -webkit-font-smoothing: none;
+  padding: 12px 20px;
+  color: var(--accent);
+  background: transparent;
+  border: 2px solid var(--accent);
+  clip-path: polygon(
+    0 6px, 6px 6px, 6px 0,
+    calc(100% - 6px) 0, calc(100% - 6px) 6px, 100% 6px,
+    100% calc(100% - 6px), calc(100% - 6px) calc(100% - 6px), calc(100% - 6px) 100%,
+    6px 100%, 6px calc(100% - 6px), 0 calc(100% - 6px)
+  );
+  box-shadow: 4px 4px 0 var(--accent);
+  transition: box-shadow 0.1s, transform 0.1s, background 0.1s;
+  cursor: pointer;
+  position: relative;
+}
+@media (hover: hover) {
+  .pixel-btn:hover {
+    background: var(--accent-dim);
+    box-shadow: 2px 2px 0 var(--accent), 0 0 16px var(--accent-glow);
+    transform: translate(2px, 2px);
+  }
+}
+.pixel-btn:active {
+  box-shadow: 0 0 0 var(--accent);
+  transform: translate(4px, 4px);
+}
+
+.pixel-btn-ghost {
+  font-family: var(--font-pixel);
+  font-size: 7px;
+  letter-spacing: 0.05em;
+  -webkit-font-smoothing: none;
+  padding: 12px 20px;
+  color: var(--text-secondary);
+  background: transparent;
+  border: 2px solid var(--border-subtle);
+  clip-path: polygon(
+    0 6px, 6px 6px, 6px 0,
+    calc(100% - 6px) 0, calc(100% - 6px) 6px, 100% 6px,
+    100% calc(100% - 6px), calc(100% - 6px) calc(100% - 6px), calc(100% - 6px) 100%,
+    6px 100%, 6px calc(100% - 6px), 0 calc(100% - 6px)
+  );
+  transition: all 0.15s;
+  cursor: pointer;
+}
+@media (hover: hover) {
+  .pixel-btn-ghost:hover {
+    border-color: var(--border);
+    color: var(--text-primary);
+    background: rgba(255,255,255,0.03);
+  }
+}
+
+/* Pixel section label */
+.section-label {
+  font-family: var(--font-pixel);
+  font-size: 6px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  -webkit-font-smoothing: none;
+  text-shadow: 0 0 8px var(--accent-glow);
+}
+
+/* Pixel tag/badge */
+.pixel-tag {
+  font-family: var(--font-pixel);
+  font-size: 6px;
+  letter-spacing: 0.05em;
+  -webkit-font-smoothing: none;
+  padding: 4px 8px;
+  clip-path: polygon(
+    0 3px, 3px 3px, 3px 0,
+    calc(100% - 3px) 0, calc(100% - 3px) 3px, 100% 3px,
+    100% calc(100% - 3px), calc(100% - 3px) calc(100% - 3px), calc(100% - 3px) 100%,
+    3px 100%, 3px calc(100% - 3px), 0 calc(100% - 3px)
+  );
+}
+
+/* Pixel divider — a row of dots */
+.pixel-divider {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  overflow: hidden;
+}
+.pixel-divider::before,
+.pixel-divider::after {
+  content: '';
+  flex: 1;
+  height: 2px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--border) 0px,
+    var(--border) 4px,
+    transparent 4px,
+    transparent 8px
+  );
+}
+
+/* Glitch effect on hover */
+.glitch-hover {
+  position: relative;
+}
+.glitch-hover::before,
+.glitch-hover::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  font-family: inherit;
+  font-size: inherit;
+}
+.glitch-hover:hover::before {
+  color: #00e5ff;
+  animation: glitch-1 0.25s steps(1) infinite;
+  pointer-events: none;
+}
+.glitch-hover:hover::after {
+  color: #ff3366;
+  animation: glitch-2 0.25s steps(1) infinite;
+  pointer-events: none;
+}
+
+/* Retro shadow (hard pixel offset) */
+.pixel-shadow {
+  box-shadow: 4px 4px 0 var(--accent);
+  transition: box-shadow 0.1s, transform 0.1s;
+}
+@media (hover: hover) {
+  .pixel-shadow:hover {
+    box-shadow: 2px 2px 0 var(--accent), 0 0 20px rgba(191,95,255,0.2);
+    transform: translate(2px, 2px);
+  }
+}
+
+/* Reduced motion fallbacks */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
